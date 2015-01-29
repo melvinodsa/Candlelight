@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +50,7 @@ public class MainScreen extends FragmentActivity {
     }
 
     private class DemoCollectionPagerAdapter extends FragmentStatePagerAdapter {
+
 
         public DemoCollectionPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -114,7 +117,9 @@ public class MainScreen extends FragmentActivity {
                     signup.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                        new LongOperation().execute("yes");
+                            if ( isValidEmail(email.getText())){
+                                new LongOperation().execute("yes");
+                            }
                         }
                     });
                     return rootView;
@@ -152,6 +157,11 @@ public class MainScreen extends FragmentActivity {
                 }
             }
         }
+
+        private boolean isValidEmail(CharSequence target) {
+            return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
+
         private class LongOperation extends AsyncTask<String, Void, Void> {
 
             @Override
