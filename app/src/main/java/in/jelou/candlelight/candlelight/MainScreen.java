@@ -2,18 +2,33 @@ package in.jelou.candlelight.candlelight;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainScreen extends FragmentActivity {
@@ -29,6 +44,7 @@ public class MainScreen extends FragmentActivity {
                 getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mDemoCollectionPagerAdapter);
+
     }
 
     private class DemoCollectionPagerAdapter extends FragmentStatePagerAdapter {
@@ -68,6 +84,7 @@ public class MainScreen extends FragmentActivity {
 
         EditText username, password, email;
         Button signup;
+        TextView errorsign;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,7 +101,7 @@ public class MainScreen extends FragmentActivity {
                         .getSharedPreferences("jy.jelouodsa.candlelight",
                                 MODE_PRIVATE);
                 if (!pref.getBoolean("issignedup", false)) {
-                    LinearLayout rootView = (LinearLayout) inflater.inflate(
+                    final LinearLayout rootView = (LinearLayout) inflater.inflate(
                             R.layout.welcome, container, false);
                     email = (EditText) rootView.findViewById(R.id.email);
                     email.setVisibility(View.VISIBLE);
@@ -97,18 +114,7 @@ public class MainScreen extends FragmentActivity {
                     signup.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            SharedPreferences.Editor editor = pref.edit();
-                            editor.putBoolean("issignedup", true);
-                            editor.putString("username", username.getText()
-                                    .toString());
-                            editor.putString("email", email.getText()
-                                    .toString());
-                            editor.putString("password", password.getText()
-                                    .toString());
-                            editor.commit();
-                            Intent intent = new Intent(v.getContext(),
-                                    MainScreen.class);
-                            startActivity(intent);
+                        new LongOperation().execute("yes");
                         }
                     });
                     return rootView;
@@ -144,6 +150,39 @@ public class MainScreen extends FragmentActivity {
                             R.layout.welcome, container, false);
                     return rootView;
                 }
+            }
+        }
+        private class LongOperation extends AsyncTask<String, Void, Void> {
+
+            @Override
+            protected Void doInBackground(String... params) {
+                postData();
+                return null;
+            }
+        }
+
+        public void postData() {
+
+            try {
+                // create a list to store HTTP variables and their values
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpPost httppost = new HttpPost("http://192.168.68.182:8080");
+
+
+                // Add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                nameValuePairs.add(new BasicNameValuePair("a", username.getText().toString()));
+                nameValuePairs.add(new BasicNameValuePair("a", email.getText().toString()));
+                nameValuePairs.add(new BasicNameValuePair("b", password.getText().toString()));
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+
+            } catch (ClientProtocolException e) {
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
             }
         }
     }
