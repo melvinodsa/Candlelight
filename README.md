@@ -4,4 +4,4 @@ The source code of the server side is in this repo
 
 https://github.com/melvinodsa/Candlelight
 
-Change the ip address to your testing computer's ip address for the app to work.
+Change the ip address to your testing computer's ip address for the App to work.
