@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +27,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,13 +102,15 @@ public class MainScreen extends FragmentActivity {
                 return rootView;
             }
             else{
+
                 final SharedPreferences pref = container.getContext()
                         .getSharedPreferences("jy.jelouodsa.candlelight",
                                 MODE_PRIVATE);
                 if (!pref.getBoolean("issignedup", false)) {
                     final LinearLayout rootView = (LinearLayout) inflater.inflate(
                             R.layout.welcome, container, false);
-                    email = (EditText) rootView.findViewById(R.id.email);
+                    errorsign = (TextView) rootView.findViewById(R.id.errorsign);
+                            email = (EditText) rootView.findViewById(R.id.email);
                     email.setVisibility(View.VISIBLE);
                     username = (EditText) rootView.findViewById(R.id.username);
                     username.setVisibility(View.VISIBLE);
@@ -162,21 +166,27 @@ public class MainScreen extends FragmentActivity {
             return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
         }
 
-        private class LongOperation extends AsyncTask<String, Void, Void> {
+        private class LongOperation extends AsyncTask<String, Void, String> {
 
             @Override
-            protected Void doInBackground(String... params) {
-                postData();
-                return null;
+            protected String doInBackground(String... params) {
+                return postData();            }
+
+
+            @Override
+            protected void onPostExecute(String result) {
+                Log.i("sdfsf", result);
+                errorsign.setText(result);
             }
         }
 
-        public void postData() {
+        public String postData() {
+            StringBuilder total = new StringBuilder();
 
             try {
                 // create a list to store HTTP variables and their values
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost httppost = new HttpPost("http://192.168.68.182:8080");
+                HttpPost httppost = new HttpPost("http://192.168.68.182:8080/registeruser");
 
 
                 // Add your data
@@ -188,12 +198,20 @@ public class MainScreen extends FragmentActivity {
 
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
+                BufferedReader r = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+                String line;
+                while ((line = r.readLine()) != null) {
+                    total.append(line);
+                }
+
 
             } catch (ClientProtocolException e) {
 
             } catch (IOException e) {
                 // TODO Auto-generated catch block
             }
+            return  total.toString();
         }
     }
 }

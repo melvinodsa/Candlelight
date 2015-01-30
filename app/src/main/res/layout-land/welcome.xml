@@ -68,12 +68,13 @@
         </LinearLayout>
     </LinearLayout>
     <TextView
-        android:visibility="invisible"
+        android:layout_marginTop="-40dp"
+        android:layout_marginLeft="20dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/errorsign"
-        android:layout_gravity="center"
-        android:text="Error in Signing . . ."/>
+        android:textColor="#555555"
+        android:textSize="25sp"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
