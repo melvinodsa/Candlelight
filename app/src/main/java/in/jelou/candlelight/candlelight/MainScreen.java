@@ -3,12 +3,12 @@ package in.jelou.candlelight.candlelight;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -90,13 +91,14 @@ public class MainScreen extends FragmentActivity {
         EditText username, password, email;
         Button signup;
         TextView errorsign;
+        ImageView angel;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
             Bundle args = getArguments();
-            if (args.getCharSequence(ARG_OBJECT).equals("Candle")) {
+            if (args.getCharSequence(ARG_OBJECT).equals("Angel")) {
                 LinearLayout rootView = (LinearLayout) inflater.inflate(
                         R.layout.welcome, container, false);
                 return rootView;
@@ -104,9 +106,14 @@ public class MainScreen extends FragmentActivity {
             else{
 
                 final SharedPreferences pref = container.getContext()
-                        .getSharedPreferences("jy.jelouodsa.candlelight",
+                        .getSharedPreferences("jy.jelou.candlelight.candlelight",
                                 MODE_PRIVATE);
-                if (!pref.getBoolean("issignedup", false)) {
+                if (pref.getBoolean("issignedup", false)) {
+                    final LinearLayout rootView = (LinearLayout) inflater.inflate(
+                            R.layout.prayer, container, false);
+                    return rootView;
+                }
+                else if (!pref.getBoolean("issignedup", false)) {
                     final LinearLayout rootView = (LinearLayout) inflater.inflate(
                             R.layout.welcome, container, false);
                     errorsign = (TextView) rootView.findViewById(R.id.errorsign);
@@ -177,6 +184,14 @@ public class MainScreen extends FragmentActivity {
             protected void onPostExecute(String result) {
                 Log.i("sdfsf", result);
                 errorsign.setText(result);
+                final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
+                        MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("issignedup", true);
+                editor.commit();
+                Intent intent = new Intent(getActivity().getBaseContext(),
+                        MainScreen.class);
+                startActivity(intent);
             }
         }
 
@@ -186,7 +201,7 @@ public class MainScreen extends FragmentActivity {
             try {
                 // create a list to store HTTP variables and their values
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost httppost = new HttpPost("http://192.168.68.182:8080/registeruser");
+                HttpPost httppost = new HttpPost("http://192.168.150.1:8080/registeruser");
 
 
                 // Add your data
