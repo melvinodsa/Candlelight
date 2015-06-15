@@ -8,8 +8,28 @@
         android:id="@+id/angel"
         android:layout_margin="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="252dp"
-        android:background="@drawable/angel"
+        android:layout_height="wrap_content"
         android:layout_weight="0.18" />
-
-</LinearLayout>
+    <RelativeLayout
+        android:layout_margin="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_margin="30dp"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_rect_vert"
+            android:orientation="vertical">
+        <LinearLayout
+            android:layout_margin="5dp"
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/progress_vert"
+            android:orientation="vertical"
+            android:paddingRight="20dp"
+            android:paddingTop="50dp"/>
+        </RelativeLayout>
+    </RelativeLayout>
+    </LinearLayout>

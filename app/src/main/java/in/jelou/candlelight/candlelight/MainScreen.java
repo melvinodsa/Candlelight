@@ -1,7 +1,10 @@
 package in.jelou.candlelight.candlelight;
 
+import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,15 +12,19 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.apache.http.HttpResponse;
@@ -97,6 +104,9 @@ public class MainScreen extends FragmentActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
+            final SharedPreferences pref = container.getContext()
+                    .getSharedPreferences("jy.jelou.candlelight.candlelight",
+                            MODE_PRIVATE);
             Bundle args = getArguments();
             if (args.getCharSequence(ARG_OBJECT).equals("Angel")) {
                 LinearLayout rootView = (LinearLayout) inflater.inflate(
@@ -105,12 +115,36 @@ public class MainScreen extends FragmentActivity {
             }
             else{
 
-                final SharedPreferences pref = container.getContext()
-                        .getSharedPreferences("jy.jelou.candlelight.candlelight",
-                                MODE_PRIVATE);
+
                 if (pref.getBoolean("issignedup", false)) {
                     final LinearLayout rootView = (LinearLayout) inflater.inflate(
                             R.layout.prayer, container, false);
+                    int minus = pref.getInt("timespent",0);
+                    ImageView im = (ImageView) rootView.findViewById(R.id.angel);
+                    minus = 520;
+                    if(minus < 480){
+                        im.setImageDrawable(getResources().getDrawable(R.drawable.angelcry));
+                    }
+                    else if(minus < 960){
+                        im.setImageDrawable(getResources().getDrawable(R.drawable.angelno));
+                    }
+                    WindowManager wm = (WindowManager) container.getContext().getSystemService(Context.WINDOW_SERVICE);
+                    Display display = wm.getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    ViewGroup.LayoutParams params = im.getLayoutParams();
+                    LinearLayout rs = (LinearLayout) rootView.findViewById(R.id.progress);
+                    if(size.x < size.y){
+                        params.width = size.x/3*2;
+                        params.height = size.y/2;
+                        rs.setPadding(0,0,(minus*100/1440)*size.x*6/1000,20);
+                    } else {
+                        params.width = size.y/2;
+                        params.height = size.x/5*2;
+                        rs.setPadding(0,(minus*100/1440)*size.y*6/1000,20,0);
+                    }
+
+                    im.setLayoutParams(params);
                     return rootView;
                 }
                 else if (!pref.getBoolean("issignedup", false)) {
