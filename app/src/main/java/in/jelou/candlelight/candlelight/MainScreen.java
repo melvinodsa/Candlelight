@@ -1,18 +1,20 @@
 package in.jelou.candlelight.candlelight;
 
-import android.app.ActionBar;
+
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
@@ -22,10 +24,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
+import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -83,11 +89,11 @@ public class MainScreen extends FragmentActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             if (position == 0) {
-                return "Prayer";
-            } else if (position == 1) {
                 return "Home";
+            } else if (position == 1) {
+                return "Personal";
             } else {
-                return "My home";
+                return "Community";
             }
         }
     }
@@ -97,8 +103,9 @@ public class MainScreen extends FragmentActivity {
 
         EditText username, password, email;
         Button signup;
-        TextView errorsign;
-        ImageView angel;
+        TextView errorsign, commintyShow;
+        SeekBar bar;
+        FloatingActionButton fab;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,9 +115,71 @@ public class MainScreen extends FragmentActivity {
                     .getSharedPreferences("jy.jelou.candlelight.candlelight",
                             MODE_PRIVATE);
             Bundle args = getArguments();
-            if (args.getCharSequence(ARG_OBJECT).equals("Angel")) {
+            if (args.getCharSequence(ARG_OBJECT).equals("Personal") && pref.getBoolean("issignedup", false) ) {
                 LinearLayout rootView = (LinearLayout) inflater.inflate(
-                        R.layout.welcome, container, false);
+                        R.layout.personal, container, false);
+                bar = (SeekBar) rootView.findViewById(R.id.seekBar1);
+                final SharedPreferences.Editor editor = pref.edit();
+                bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        editor.putInt("timespent",progress);
+                        editor.commit();
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        Intent intent = new Intent(seekBar.getContext(),
+                                MainScreen.class);
+                        startActivity(intent);
+                    }
+                });
+                return rootView;
+            } else if (args.getCharSequence(ARG_OBJECT).equals("Community") && pref.getBoolean("issignedup", false) ){
+                CoordinatorLayout rootView = (CoordinatorLayout) inflater.inflate(R.layout.community, container, false);
+                commintyShow = (TextView) rootView.findViewById(R.id.community_own);
+                fab = (FloatingActionButton) rootView.findViewById(R.id.fabbutton);
+                if(!pref.getBoolean("ownCommunity",false) && (!pref.getBoolean("joinCommunity1",false) || !pref.getBoolean("joinCommunity2",false))){
+                    commintyShow.setText("It seems you have no community. Create or join one");
+                    SubActionButton.Builder itemBuilder = new SubActionButton.Builder(getActivity());
+                    TextView newcom = new TextView(rootView.getContext());
+                    newcom.setText("New");
+                    SubActionButton newcombut = itemBuilder.setContentView(newcom)
+                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    TextView joincom = new TextView(rootView.getContext());
+                    joincom.setText("Join");
+                    SubActionButton joincombut = itemBuilder.setContentView(joincom)
+                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(getActivity())
+                            .setRadius(80)
+                            .setStartAngle(180)
+                            .setEndAngle(90)
+                            .addSubActionView(newcombut)
+                            .addSubActionView(joincombut)
+                            .attachTo(fab)
+                            .build();
+                } else if(pref.getBoolean("ownCommunity",false) && (!pref.getBoolean("joinCommunity1",false) || !pref.getBoolean("joinCommunity2",false))){
+                    commintyShow.setText("It seems you can join a community. Join one");
+                    SubActionButton.Builder itemBuilder = new SubActionButton.Builder(getActivity());
+                    TextView joincom = new TextView(rootView.getContext());
+                    joincom.setText("Join");
+                    SubActionButton joincombut = itemBuilder.setContentView(joincom)
+                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(getActivity())
+                            .setRadius(80)
+                            .setStartAngle(180)
+                            .addSubActionView(joincombut)
+                            .attachTo(fab)
+                            .build();
+                } else if(pref.getBoolean("ownCommunity",false) && pref.getBoolean("joinCommunity1",false) && pref.getBoolean("joinCommunity2",false)){
+                    commintyShow.setText("View your communities");
+                }
+
                 return rootView;
             }
             else{
@@ -121,12 +190,14 @@ public class MainScreen extends FragmentActivity {
                             R.layout.prayer, container, false);
                     int minus = pref.getInt("timespent",0);
                     ImageView im = (ImageView) rootView.findViewById(R.id.angel);
-                    minus = 520;
                     if(minus < 480){
                         im.setImageDrawable(getResources().getDrawable(R.drawable.angelcry));
                     }
                     else if(minus < 960){
                         im.setImageDrawable(getResources().getDrawable(R.drawable.angelno));
+                    }
+                    else{
+                        im.setImageDrawable(getResources().getDrawable(R.drawable.angel));
                     }
                     WindowManager wm = (WindowManager) container.getContext().getSystemService(Context.WINDOW_SERVICE);
                     Display display = wm.getDefaultDisplay();
@@ -141,7 +212,7 @@ public class MainScreen extends FragmentActivity {
                     } else {
                         params.width = size.y/2;
                         params.height = size.x/5*2;
-                        rs.setPadding(0,(minus*100/1440)*size.y*6/1000,20,0);
+                        rs.setPadding(0,(minus*100/1440)*size.y*6/1000, 20, 0);
                     }
 
                     im.setLayoutParams(params);
@@ -162,7 +233,7 @@ public class MainScreen extends FragmentActivity {
                     signup.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if ( isValidEmail(email.getText())){
+                            if (isValidEmail(email.getText())) {
                                 new LongOperation().execute("yes");
                             }
                         }
