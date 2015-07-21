@@ -3,6 +3,7 @@ package in.jelou.candlelight.candlelight;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -15,6 +16,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
@@ -22,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -108,7 +112,7 @@ public class MainScreen extends FragmentActivity {
         FloatingActionButton fab;
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+        public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
 
             final SharedPreferences pref = container.getContext()
@@ -165,6 +169,7 @@ public class MainScreen extends FragmentActivity {
                             .build();
                 } else if(pref.getBoolean("ownCommunity",false) && (!pref.getBoolean("joinCommunity1",false) || !pref.getBoolean("joinCommunity2",false))){
                     commintyShow.setText("It seems you can join a community. Join one");
+                    show_comminuty_list(container, rootView);
                     SubActionButton.Builder itemBuilder = new SubActionButton.Builder(getActivity());
                     TextView joincom = new TextView(rootView.getContext());
                     joincom.setText("Join");
@@ -176,8 +181,23 @@ public class MainScreen extends FragmentActivity {
                             .addSubActionView(joincombut)
                             .attachTo(fab)
                             .build();
+                } else if(!pref.getBoolean("ownCommunity",false) && pref.getBoolean("joinCommunity1",false) && pref.getBoolean("joinCommunity2",false)){
+                    commintyShow.setText("It seems you can create a community. Create one");
+                    show_comminuty_list(container, rootView);
+                    SubActionButton.Builder itemBuilder = new SubActionButton.Builder(getActivity());
+                    TextView joincom = new TextView(rootView.getContext());
+                    joincom.setText("New");
+                    SubActionButton joincombut = itemBuilder.setContentView(joincom)
+                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(getActivity())
+                            .setRadius(80)
+                            .setStartAngle(180)
+                            .addSubActionView(joincombut)
+                            .attachTo(fab)
+                            .build();
                 } else if(pref.getBoolean("ownCommunity",false) && pref.getBoolean("joinCommunity1",false) && pref.getBoolean("joinCommunity2",false)){
-                    commintyShow.setText("View your communities");
+                    commintyShow.setText("You can view your communities");
+                    show_comminuty_list(container, rootView);
                 }
 
                 return rootView;
@@ -298,6 +318,58 @@ public class MainScreen extends FragmentActivity {
                         MainScreen.class);
                 startActivity(intent);
             }
+        }
+
+        public void show_comminuty_list(final ViewGroup container, View rootView){
+            CardView view_comminuities = (CardView) rootView.findViewById(R.id.view_community);
+            view_comminuities.setVisibility(View.VISIBLE);
+            view_comminuities.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builderSingle = new AlertDialog.Builder(container.getContext());
+                    builderSingle.setIcon(R.drawable.ic_launcher);
+                    builderSingle.setTitle("Select One Name:-");
+                    final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                            container.getContext(),
+                            android.R.layout.select_dialog_singlechoice);
+                    arrayAdapter.add("Hardik");
+                    arrayAdapter.add("Archit");
+                    arrayAdapter.add("Jignesh");
+                    builderSingle.setNegativeButton("cancel",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                    builderSingle.setAdapter(arrayAdapter,
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                        /*String strName = arrayAdapter.getItem(which);
+                                        AlertDialog.Builder builderInner = new AlertDialog.Builder(
+                                                container.getContext());
+                                        builderInner.setMessage(strName);
+                                        builderInner.setTitle("Your Selected Item is");
+                                        builderInner.setPositiveButton("Ok",
+                                                new DialogInterface.OnClickListener() {
+
+                                                    @Override
+                                                    public void onClick(
+                                                            DialogInterface dialog,
+                                                            int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+                                        builderInner.show();*/
+                                }
+                            });
+                    builderSingle.show();
+                }
+            });
         }
 
         public String postData() {
