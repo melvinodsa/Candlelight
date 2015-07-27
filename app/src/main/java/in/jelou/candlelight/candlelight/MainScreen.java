@@ -155,6 +155,15 @@ public class MainScreen extends FragmentActivity {
                     newcom.setText("New");
                     SubActionButton newcombut = itemBuilder.setContentView(newcom)
                             .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    newcombut.setOnClickListener(new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            Intent myIntent = new Intent(v.getContext(),
+                                    CreateCommunity.class);
+                            startActivity(myIntent);
+                        }
+                    });
                     TextView joincom = new TextView(rootView.getContext());
                     joincom.setText("Join");
                     SubActionButton joincombut = itemBuilder.setContentView(joincom)
@@ -309,11 +318,17 @@ public class MainScreen extends FragmentActivity {
             protected void onPostExecute(String result) {
                 Log.i("sdfsf", result);
                 errorsign.setText(result);
-                final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
-                        MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("issignedup", true);
-                editor.commit();
+                if (result.equals("User created")){
+                    final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
+                            MODE_PRIVATE);
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putBoolean("issignedup", true);
+                    editor.putString("username", username.getText().toString());
+                    editor.putString("email",email.getText().toString());
+                    editor.putString("password", password.getText().toString());
+                    editor.commit();
+                    Log.i("sdfsf", result);
+                }
                 Intent intent = new Intent(getActivity().getBaseContext(),
                         MainScreen.class);
                 startActivity(intent);
