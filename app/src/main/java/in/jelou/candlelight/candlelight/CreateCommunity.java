@@ -41,6 +41,7 @@ import java.util.List;
  */
 public class CreateCommunity extends FragmentActivity {
 
+
     DemoCollectionPagerAdapter mDemoCollectionPagerAdapter;
     ViewPager mViewPager;
 
@@ -56,8 +57,6 @@ public class CreateCommunity extends FragmentActivity {
 
 
     private class DemoCollectionPagerAdapter extends FragmentStatePagerAdapter {
-
-
         public DemoCollectionPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -84,13 +83,12 @@ public class CreateCommunity extends FragmentActivity {
 
     public static class DemoObjectFragment extends Fragment implements AdapterView.OnItemSelectedListener {
         public static final String ARG_OBJECT = "object";
-        private int privacycomm = 0;
-        private String countrycomm = "";
-        private String statecomm = "";
-        private EditText name;
-        private EditText city;
-        private String username = "";
-
+        public static int privacycomm = 0;
+        public static String countrycomm = "";
+        public static String statecomm = "";
+        public static EditText name;
+        public static EditText city;
+        public static String username = "";
         @Override
         public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -100,8 +98,8 @@ public class CreateCommunity extends FragmentActivity {
                             MODE_PRIVATE);
             username = pref.getString("username","jjjjjj");
             Log.d("poi",username);
-                LinearLayout rootView = (LinearLayout) inflater.inflate(
-                        R.layout.commuintycreate, container, false);
+            LinearLayout rootView = (LinearLayout) inflater.inflate(
+                    R.layout.commuintycreate, container, false);
             Spinner spinner = (Spinner) rootView.findViewById(R.id.privacycomm);
             Spinner countryspin = (Spinner) rootView.findViewById(R.id.country);
             Spinner statespin = (Spinner) rootView.findViewById(R.id.state);
@@ -145,7 +143,7 @@ public class CreateCommunity extends FragmentActivity {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             Spinner spinner = (Spinner) parent;
             if (spinner.getId() == R.id.privacycomm){
-                privacycomm = position;
+
             } else if(spinner.getId() == R.id.country) {
                 countrycomm = (String) parent.getItemAtPosition(position);
                 Spinner statespin = (Spinner) parent.getRootView().findViewById(R.id.state);
@@ -159,33 +157,7 @@ public class CreateCommunity extends FragmentActivity {
 
         }
 
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-            privacycomm = 0;
-        }
-
-        private class LongOperation extends AsyncTask<String, Void, String> {
-
-            @Override
-            protected String doInBackground(String... params) {
-                return postData();            }
-
-
-            @Override
-            protected void onPostExecute(String result) {
-                Log.i("sdfsf", result);
-                /*final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
-                        MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putBoolean("issignedup", true);
-                editor.commit();
-                Intent intent = new Intent(getActivity().getBaseContext(),
-                        MainScreen.class);
-                startActivity(intent);*/
-            }
-        }
-
-        public String postData() {
+        public static String postData() {
             StringBuilder total = new StringBuilder();
 
             try {
@@ -221,6 +193,34 @@ public class CreateCommunity extends FragmentActivity {
             }
             return  total.toString();
         }
-    }
 
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            privacycomm = 0;
+        }
+
+        private class LongOperation extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+                return postData();
+            }
+
+
+            @Override
+            protected void onPostExecute(String result) {
+                Log.i("sdfsf", result);
+                final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
+                        MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                if(result.equals("Community created")) {
+                    editor.putBoolean("ownCommunity", true);
+                    editor.commit();
+                }
+                Intent intent = new Intent(getActivity().getBaseContext(),
+                        MainScreen.class);
+                startActivity(intent);
+            }
+        }
+    }
 }

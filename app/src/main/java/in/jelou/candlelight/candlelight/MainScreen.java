@@ -27,6 +27,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -110,6 +112,7 @@ public class MainScreen extends FragmentActivity {
         TextView errorsign, commintyShow;
         SeekBar bar;
         FloatingActionButton fab;
+        CheckBox logsigoption;
 
         @Override
         public View onCreateView(LayoutInflater inflater, final ViewGroup container,
@@ -119,7 +122,7 @@ public class MainScreen extends FragmentActivity {
                     .getSharedPreferences("jy.jelou.candlelight.candlelight",
                             MODE_PRIVATE);
             Bundle args = getArguments();
-            if (args.getCharSequence(ARG_OBJECT).equals("Personal") && pref.getBoolean("issignedup", false) ) {
+            if (args.getCharSequence(ARG_OBJECT).equals("Personal") && pref.getBoolean("islogedin", false) ) {
                 LinearLayout rootView = (LinearLayout) inflater.inflate(
                         R.layout.personal, container, false);
                 bar = (SeekBar) rootView.findViewById(R.id.seekBar1);
@@ -144,7 +147,7 @@ public class MainScreen extends FragmentActivity {
                     }
                 });
                 return rootView;
-            } else if (args.getCharSequence(ARG_OBJECT).equals("Community") && pref.getBoolean("issignedup", false) ){
+            } else if (args.getCharSequence(ARG_OBJECT).equals("Community") && pref.getBoolean("islogedin", false) ){
                 CoordinatorLayout rootView = (CoordinatorLayout) inflater.inflate(R.layout.community, container, false);
                 commintyShow = (TextView) rootView.findViewById(R.id.community_own);
                 fab = (FloatingActionButton) rootView.findViewById(R.id.fabbutton);
@@ -214,7 +217,7 @@ public class MainScreen extends FragmentActivity {
             else{
 
 
-                if (pref.getBoolean("issignedup", false)) {
+                if (pref.getBoolean("islogedin", false)) {
                     final LinearLayout rootView = (LinearLayout) inflater.inflate(
                             R.layout.prayer, container, false);
                     int minus = pref.getInt("timespent",0);
@@ -247,57 +250,63 @@ public class MainScreen extends FragmentActivity {
                     im.setLayoutParams(params);
                     return rootView;
                 }
-                else if (!pref.getBoolean("issignedup", false)) {
+                else{
                     final LinearLayout rootView = (LinearLayout) inflater.inflate(
                             R.layout.welcome, container, false);
-                    errorsign = (TextView) rootView.findViewById(R.id.errorsign);
-                            email = (EditText) rootView.findViewById(R.id.email);
-                    email.setVisibility(View.VISIBLE);
-                    username = (EditText) rootView.findViewById(R.id.username);
-                    username.setVisibility(View.VISIBLE);
-                    password = (EditText) rootView.findViewById(R.id.password);
-                    password.setVisibility(View.VISIBLE);
-                    signup = (Button) rootView.findViewById(R.id.signup);
-                    signup.setVisibility(View.VISIBLE);
-                    signup.setOnClickListener(new View.OnClickListener() {
+                    logsigoption = (CheckBox) rootView.findViewById(R.id.logsigoption);
+                    logsigoption.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
-                        public void onClick(View v) {
-                            if (isValidEmail(email.getText())) {
-                                new LongOperation().execute("yes");
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if(logsigoption.isChecked()){
+                                errorsign = (TextView) rootView.findViewById(R.id.errorsign);
+                                email = (EditText) rootView.findViewById(R.id.email);
+                                email.setVisibility(View.VISIBLE);
+                                username = (EditText) rootView.findViewById(R.id.username);
+                                username.setVisibility(View.VISIBLE);
+                                password = (EditText) rootView.findViewById(R.id.password);
+                                password.setVisibility(View.VISIBLE);
+                                signup = (Button) rootView.findViewById(R.id.login);
+                                signup.setVisibility(View.INVISIBLE);
+                                signup = (Button) rootView.findViewById(R.id.signup);
+                                signup.setVisibility(View.VISIBLE);
+                                signup.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        if (isValidEmail(email.getText())) {
+                                            new LongOperation().execute("yes");
+                                        }
+                                    }
+                                });
+                            } else {
+                                username = (EditText) rootView.findViewById(R.id.email);
+                                username.setVisibility(View.INVISIBLE);
+                                username = (EditText) rootView.findViewById(R.id.username);
+                                username.setVisibility(View.VISIBLE);
+                                password = (EditText) rootView.findViewById(R.id.password);
+                                password.setVisibility(View.VISIBLE);
+                                signup = (Button) rootView.findViewById(R.id.signup);
+                                signup.setVisibility(View.INVISIBLE);
+                                signup = (Button) rootView.findViewById(R.id.login);
+                                signup.setVisibility(View.VISIBLE);
+                                signup.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        SharedPreferences.Editor editor = pref.edit();
+                                        editor.putBoolean("islogedin", true);
+                                        editor.putString("username", username.getText()
+                                                .toString());
+                                        editor.putString("password", password.getText()
+                                                .toString());
+                                        editor.commit();
+                                        Intent intent = new Intent(v.getContext(),
+                                                MainScreen.class);
+                                        startActivity(intent);
+                                    }
+                                });
                             }
                         }
                     });
-                    return rootView;
-                }
-                else if (!pref.getBoolean("islogedin", false)){
-                    LinearLayout rootView = (LinearLayout) inflater.inflate(
-                            R.layout.welcome, container, false);
-                    username = (EditText) rootView.findViewById(R.id.username);
-                    username.setVisibility(View.VISIBLE);
-                    password = (EditText) rootView.findViewById(R.id.password);
-                    password.setVisibility(View.VISIBLE);
-                    signup = (Button) rootView.findViewById(R.id.login);
-                    signup.setVisibility(View.VISIBLE);
-                    signup.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            SharedPreferences.Editor editor = pref.edit();
-                            editor.putBoolean("islogedin", true);
-                            editor.putString("username", username.getText()
-                                    .toString());
-                            editor.putString("password", password.getText()
-                                    .toString());
-                            editor.commit();
-                            Intent intent = new Intent(v.getContext(),
-                                    MainScreen.class);
-                            startActivity(intent);
-                        }
-                    });
-                    return rootView;
-                }
-                else {
-                    LinearLayout rootView = (LinearLayout) inflater.inflate(
-                            R.layout.welcome, container, false);
+
                     return rootView;
                 }
             }
@@ -322,7 +331,7 @@ public class MainScreen extends FragmentActivity {
                     final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
                             MODE_PRIVATE);
                     SharedPreferences.Editor editor = pref.edit();
-                    editor.putBoolean("issignedup", true);
+                    editor.putBoolean("islogedin", true);
                     editor.putString("username", username.getText().toString());
                     editor.putString("email",email.getText().toString());
                     editor.putString("password", password.getText().toString());

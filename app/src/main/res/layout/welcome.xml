@@ -25,7 +25,6 @@
                 android:textColor="#000"
                 android:textColorHint="#000"/>
             <EditText
-                android:visibility="invisible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="username"
@@ -33,7 +32,6 @@
                 android:textColor="#000"
                 android:textColorHint="#000"/>
             <EditText
-                android:visibility="invisible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="password"
@@ -47,7 +45,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <Button
-                android:visibility="invisible"
                 android:layout_margin="5dp"
                 android:id="@+id/login"
                 android:layout_width="wrap_content"
@@ -64,7 +61,11 @@
                 android:text="Signup"
                 android:textColor="#000000"
                 android:background="@drawable/buttonshape"/>
-
+            <CheckBox
+                android:id="@+id/logsigoption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Not registered"/>
             </LinearLayout>
     </LinearLayout>
     <TextView
