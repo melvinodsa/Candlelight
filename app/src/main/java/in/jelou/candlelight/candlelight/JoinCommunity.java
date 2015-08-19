@@ -20,7 +20,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -37,11 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by hacker on 27/7/15.
+ * Created by hacker on 18/8/15.
  */
-public class CreateCommunity extends FragmentActivity {
-
-
+public class JoinCommunity extends FragmentActivity {
     DemoCollectionPagerAdapter mDemoCollectionPagerAdapter;
     ViewPager mViewPager;
 
@@ -77,13 +74,12 @@ public class CreateCommunity extends FragmentActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "New Community";
+            return "Join Community";
         }
     }
 
     public static class DemoObjectFragment extends Fragment implements AdapterView.OnItemSelectedListener {
         public static final String ARG_OBJECT = "object";
-        public static int privacycomm = 0;
         public static String countrycomm = "";
         public static String statecomm = "";
         public static EditText name;
@@ -97,42 +93,32 @@ public class CreateCommunity extends FragmentActivity {
                     .getSharedPreferences("jy.jelou.candlelight.candlelight",
                             MODE_PRIVATE);
             username = pref.getString("username","jjjjjj");
-            Log.d("poi",username);
+            Log.d("poi", username);
             LinearLayout rootView = (LinearLayout) inflater.inflate(
-                    R.layout.commuintycreate, container, false);
-            Spinner spinner = (Spinner) rootView.findViewById(R.id.privacycomm);
-            Spinner countryspin = (Spinner) rootView.findViewById(R.id.country);
-            Spinner statespin = (Spinner) rootView.findViewById(R.id.state);
+                    R.layout.searchcommunity, container, false);
+            Spinner countryspin = (Spinner) rootView.findViewById(R.id.searchcountry);
+            Spinner statespin = (Spinner) rootView.findViewById(R.id.searchstate);
             final ArrayAdapter<String> arrayCountryAdapter = new ArrayAdapter<String>(
                     getActivity(), android.R.layout.simple_spinner_item, Countrylists.countrylist);
             arrayCountryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             countryspin.setAdapter(arrayCountryAdapter);
             countryspin.setOnItemSelectedListener(this);
             statespin.setOnItemSelectedListener(this);
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                    getActivity(), android.R.layout.simple_spinner_item);
-            arrayAdapter.add("Public");
-            arrayAdapter.add("Private");
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(arrayAdapter);
-            spinner.setOnItemSelectedListener(this);
-            CardView backButton = (CardView)rootView.findViewById(R.id.backfromcommunitycreate);
-            CardView createButton = (CardView) rootView.findViewById(R.id.communitycreate);
-            name = (EditText) rootView.findViewById(R.id.commoninewname);
-            city = (EditText) rootView.findViewById(R.id.commoninewcity);
-            backButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(),
-                            MainScreen.class);
-                    startActivity(intent);
-                }
-            });
-
-            createButton.setOnClickListener(new View.OnClickListener() {
+            CardView searchButton = (CardView)rootView.findViewById(R.id.communitysearch);
+            CardView joinButton = (CardView) rootView.findViewById(R.id.communityjoin);
+            name = (EditText) rootView.findViewById(R.id.commonisearchname);
+            city = (EditText) rootView.findViewById(R.id.commonisearchcity);
+            searchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new LongOperation().execute("yes");
+                }
+            });
+
+            joinButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //new LongOperation().execute("yes");
                 }
             });
 
@@ -142,11 +128,9 @@ public class CreateCommunity extends FragmentActivity {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             Spinner spinner = (Spinner) parent;
-            if (spinner.getId() == R.id.privacycomm){
-
-            } else if(spinner.getId() == R.id.country) {
+            if(spinner.getId() == R.id.searchcountry) {
                 countrycomm = (String) parent.getItemAtPosition(position);
-                Spinner statespin = (Spinner) parent.getRootView().findViewById(R.id.state);
+                Spinner statespin = (Spinner) parent.getRootView().findViewById(R.id.searchstate);
                 final ArrayAdapter<String> arrayStateAdapter = new ArrayAdapter<String>(
                         getActivity(), android.R.layout.simple_spinner_item, Countrylists.buildStates(position));
                 arrayStateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -163,17 +147,16 @@ public class CreateCommunity extends FragmentActivity {
             try {
                 // create a list to store HTTP variables and their values
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost httppost = new HttpPost("http://192.168.150.1:8080/registercommunity");
+                HttpPost httppost = new HttpPost("http://192.168.150.1:8080/searchcommunity");
 
                 // Add your data
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 
-                nameValuePairs.add(new BasicNameValuePair("a", Integer.toString(privacycomm)));
+
                 nameValuePairs.add(new BasicNameValuePair("a", countrycomm));
                 nameValuePairs.add(new BasicNameValuePair("b", statecomm));
                 nameValuePairs.add(new BasicNameValuePair("b", name.getText().toString()));
                 nameValuePairs.add(new BasicNameValuePair("b", city.getText().toString()));
-                nameValuePairs.add(new BasicNameValuePair("b", username));
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                 // Execute HTTP Post Request
@@ -196,7 +179,6 @@ public class CreateCommunity extends FragmentActivity {
 
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
-            privacycomm = 0;
         }
 
         private class LongOperation extends AsyncTask<String, Void, String> {
@@ -213,11 +195,11 @@ public class CreateCommunity extends FragmentActivity {
                 final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
                         MODE_PRIVATE);
                 SharedPreferences.Editor editor = pref.edit();
-                if(result.equals("Community created")) {
+                /*if(result.equals("Community created")) {
                     editor.putBoolean("ownCommunity", true);
                     editor.putString("oCommunity",name.getText().toString());
                     editor.commit();
-                }
+                }*/
                 Intent intent = new Intent(getActivity().getBaseContext(),
                         MainScreen.class);
                 startActivity(intent);

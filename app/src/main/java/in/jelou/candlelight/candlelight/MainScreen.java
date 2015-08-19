@@ -108,7 +108,7 @@ public class MainScreen extends FragmentActivity {
         public static final String ARG_OBJECT = "object";
 
         EditText username, password, email;
-        Button signup;
+        CardView signup;
         TextView errorsign, commintyShow;
         SeekBar bar;
         FloatingActionButton fab;
@@ -171,6 +171,15 @@ public class MainScreen extends FragmentActivity {
                     joincom.setText("Join");
                     SubActionButton joincombut = itemBuilder.setContentView(joincom)
                             .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    joincombut.setOnClickListener(new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            Intent myIntent = new Intent(v.getContext(),
+                                    JoinCommunity.class);
+                            startActivity(myIntent);
+                        }
+                    });
                     FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(getActivity())
                             .setRadius(80)
                             .setStartAngle(180)
@@ -222,6 +231,18 @@ public class MainScreen extends FragmentActivity {
                             R.layout.prayer, container, false);
                     int minus = pref.getInt("timespent",0);
                     ImageView im = (ImageView) rootView.findViewById(R.id.angel);
+                    signup = (CardView) rootView.findViewById(R.id.logout);
+                    signup.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final SharedPreferences.Editor editor = pref.edit();
+                            editor.putBoolean("islogedin",false);
+                            editor.commit();
+                            Intent intent = new Intent(v.getContext(),
+                                    MainScreen.class);
+                            startActivity(intent);
+                        }
+                    });
                     if(minus < 480){
                         im.setImageDrawable(getResources().getDrawable(R.drawable.angelcry));
                     }
@@ -253,6 +274,13 @@ public class MainScreen extends FragmentActivity {
                 else{
                     final LinearLayout rootView = (LinearLayout) inflater.inflate(
                             R.layout.welcome, container, false);
+                    signup = (CardView) rootView.findViewById(R.id.login);
+                    signup.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            new LongOperation1().execute("yes");
+                        }
+                    });
                     logsigoption = (CheckBox) rootView.findViewById(R.id.logsigoption);
                     logsigoption.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
@@ -265,9 +293,9 @@ public class MainScreen extends FragmentActivity {
                                 username.setVisibility(View.VISIBLE);
                                 password = (EditText) rootView.findViewById(R.id.password);
                                 password.setVisibility(View.VISIBLE);
-                                signup = (Button) rootView.findViewById(R.id.login);
+                                signup = (CardView) rootView.findViewById(R.id.login);
                                 signup.setVisibility(View.INVISIBLE);
-                                signup = (Button) rootView.findViewById(R.id.signup);
+                                signup = (CardView) rootView.findViewById(R.id.signup);
                                 signup.setVisibility(View.VISIBLE);
                                 signup.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -284,23 +312,14 @@ public class MainScreen extends FragmentActivity {
                                 username.setVisibility(View.VISIBLE);
                                 password = (EditText) rootView.findViewById(R.id.password);
                                 password.setVisibility(View.VISIBLE);
-                                signup = (Button) rootView.findViewById(R.id.signup);
+                                signup = (CardView) rootView.findViewById(R.id.signup);
                                 signup.setVisibility(View.INVISIBLE);
-                                signup = (Button) rootView.findViewById(R.id.login);
+                                signup = (CardView) rootView.findViewById(R.id.login);
                                 signup.setVisibility(View.VISIBLE);
                                 signup.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        SharedPreferences.Editor editor = pref.edit();
-                                        editor.putBoolean("islogedin", true);
-                                        editor.putString("username", username.getText()
-                                                .toString());
-                                        editor.putString("password", password.getText()
-                                                .toString());
-                                        editor.commit();
-                                        Intent intent = new Intent(v.getContext(),
-                                                MainScreen.class);
-                                        startActivity(intent);
+                                        new LongOperation1().execute("yes");
                                     }
                                 });
                             }
@@ -344,6 +363,33 @@ public class MainScreen extends FragmentActivity {
             }
         }
 
+        private class LongOperation1 extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+                return postData1();            }
+
+
+            @Override
+            protected void onPostExecute(String result) {
+                Log.i("sdfsf", result);
+                errorsign.setText(result);
+                if (result.equals("User is good")){
+                    final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
+                            MODE_PRIVATE);
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putBoolean("islogedin", true);
+                    editor.putString("username", username.getText().toString());
+                    editor.putString("password", password.getText().toString());
+                    editor.commit();
+                    Log.i("sdfsf", result);
+                }
+                Intent intent = new Intent(getActivity().getBaseContext(),
+                        MainScreen.class);
+                startActivity(intent);
+            }
+        }
+
         public void show_comminuty_list(final ViewGroup container, View rootView){
             CardView view_comminuities = (CardView) rootView.findViewById(R.id.view_community);
             view_comminuities.setVisibility(View.VISIBLE);
@@ -356,9 +402,12 @@ public class MainScreen extends FragmentActivity {
                     final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                             container.getContext(),
                             android.R.layout.select_dialog_singlechoice);
-                    arrayAdapter.add("Hardik");
-                    arrayAdapter.add("Archit");
-                    arrayAdapter.add("Jignesh");
+                    final SharedPreferences pref = container.getContext()
+                            .getSharedPreferences("jy.jelou.candlelight.candlelight",
+                                    MODE_PRIVATE);
+                    if(pref.getBoolean("ownCommunity", false)){
+                        arrayAdapter.add(pref.getString("oCommunity",null));
+                    }
                     builderSingle.setNegativeButton("cancel",
                             new DialogInterface.OnClickListener() {
 
@@ -409,6 +458,39 @@ public class MainScreen extends FragmentActivity {
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
                 nameValuePairs.add(new BasicNameValuePair("a", username.getText().toString()));
                 nameValuePairs.add(new BasicNameValuePair("a", email.getText().toString()));
+                nameValuePairs.add(new BasicNameValuePair("b", password.getText().toString()));
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                BufferedReader r = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+                String line;
+                while ((line = r.readLine()) != null) {
+                    total.append(line);
+                }
+
+
+            } catch (ClientProtocolException e) {
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+            }
+            return  total.toString();
+        }
+
+        public String postData1() {
+            StringBuilder total = new StringBuilder();
+
+            try {
+                // create a list to store HTTP variables and their values
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpPost httppost = new HttpPost("http://192.168.150.1:8080/loginuser");
+
+
+                // Add your data
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                nameValuePairs.add(new BasicNameValuePair("a", username.getText().toString()));
                 nameValuePairs.add(new BasicNameValuePair("b", password.getText().toString()));
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 

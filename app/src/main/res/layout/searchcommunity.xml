@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content">
                 <android.support.v7.widget.CardView
                     android:layout_marginLeft="10dp"
-                    android:id="@+id/backfromcommunitysearch"
+                    android:id="@+id/communitysearch"
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:layout_width="wrap_content"
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content">
                 <android.support.v7.widget.CardView
                     android:layout_marginLeft="10dp"
-                    android:id="@+id/communitysearch"
+                    android:id="@+id/communityjoin"
                     xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:layout_width="wrap_content"
@@ -139,7 +139,7 @@
                         android:paddingRight="12dp"
                         android:textColor="#de000000"
                         android:fontFamily="sans-serif-medium"
-                        android:text="Create" />
+                        android:text="Join" />
 
                 </android.support.v7.widget.CardView>
             </LinearLayout>

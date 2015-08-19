@@ -28,6 +28,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="in.jelou.candlelight.candlelight.CreateCommunity" />
         </activity>
+        <activity
+            android:noHistory="true"
+            android:name=".JoinCommunity"
+            android:label="@string/app_name"
+            android:parentActivityName=".MainScreen" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="in.jelou.candlelight.candlelight.JoinCommunity" />
+        </activity>
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="3e574c27e92dd4a5f68d7d5e50542666d5a6e13c" />

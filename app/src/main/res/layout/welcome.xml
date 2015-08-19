@@ -49,23 +49,57 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <Button
-                    android:layout_margin="5dp"
+                <android.support.v7.widget.CardView
+                    android:layout_marginLeft="10dp"
                     android:id="@+id/login"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Login"
-                    android:textColor="#000000"
-                    android:background="@drawable/buttonshape"/>
-                <Button
+                    card_view:cardBackgroundColor="#ff01C2D4"
+                    card_view:cardCornerRadius="6dp"
+                    android:layout_marginBottom="20dp"
+                    card_view:cardElevation="10dp">
+
+                    <TextView
+                        android:layout_marginRight="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8.5dp"
+                        android:paddingBottom="8.5dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:textColor="#de000000"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Login" />
+
+                </android.support.v7.widget.CardView>
+                <android.support.v7.widget.CardView
                     android:visibility="invisible"
-                    android:layout_margin="5dp"
+                    android:layout_marginLeft="10dp"
                     android:id="@+id/signup"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Signup"
-                    android:textColor="#000000"
-                    android:background="@drawable/buttonshape"/>
+                    card_view:cardBackgroundColor="#ff01C2D4"
+                    card_view:cardCornerRadius="6dp"
+                    android:layout_marginBottom="20dp"
+                    card_view:cardElevation="10dp">
+
+                    <TextView
+                        android:layout_marginRight="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="8.5dp"
+                        android:paddingBottom="8.5dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:textColor="#de000000"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Signup" />
+
+                </android.support.v7.widget.CardView>
             </LinearLayout>
             <CheckBox
                 android:id="@+id/logsigoption"
