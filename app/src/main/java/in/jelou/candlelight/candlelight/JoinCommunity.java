@@ -1,6 +1,5 @@
 package in.jelou.candlelight.candlelight;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -85,6 +86,9 @@ public class JoinCommunity extends FragmentActivity {
         public static EditText name;
         public static EditText city;
         public static String username = "";
+        private RecyclerView mRecyclerView;
+        private RecyclerView.Adapter mAdapter;
+        private RecyclerView.LayoutManager mLayoutManager;
         @Override
         public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -121,6 +125,12 @@ public class JoinCommunity extends FragmentActivity {
                     //new LongOperation().execute("yes");
                 }
             });
+            mRecyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+            mRecyclerView.setHasFixedSize(true);
+
+            // use a linear layout manager
+            mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+            mRecyclerView.setLayoutManager(mLayoutManager);
 
             return rootView;
         }
@@ -194,15 +204,19 @@ public class JoinCommunity extends FragmentActivity {
                 Log.i("sdfsf", result);
                 final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
                         MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                /*if(result.equals("Community created")) {
+
+
+                // specify an adapter (see also next example)
+                String[] myDataset = result.split("\n");
+                mAdapter = new MyAdapter(myDataset);
+                mRecyclerView.setAdapter(mAdapter);
+                /*SharedPreferences.Editor editor = pref.edit();
+                if(result.equals("Community created")) {
                     editor.putBoolean("ownCommunity", true);
                     editor.putString("oCommunity",name.getText().toString());
                     editor.commit();
                 }*/
-                Intent intent = new Intent(getActivity().getBaseContext(),
-                        MainScreen.class);
-                startActivity(intent);
+
             }
         }
     }
