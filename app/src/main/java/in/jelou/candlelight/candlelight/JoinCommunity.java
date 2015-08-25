@@ -1,5 +1,7 @@
 package in.jelou.candlelight.candlelight;
 
+
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -79,6 +82,7 @@ public class JoinCommunity extends FragmentActivity {
         }
     }
 
+
     public static class DemoObjectFragment extends Fragment implements AdapterView.OnItemSelectedListener {
         public static final String ARG_OBJECT = "object";
         public static String countrycomm = "";
@@ -109,20 +113,20 @@ public class JoinCommunity extends FragmentActivity {
             countryspin.setOnItemSelectedListener(this);
             statespin.setOnItemSelectedListener(this);
             CardView searchButton = (CardView)rootView.findViewById(R.id.communitysearch);
-            CardView joinButton = (CardView) rootView.findViewById(R.id.communityjoin);
+            CardView backButton = (CardView) rootView.findViewById(R.id.backfromcommunitysearch);
             name = (EditText) rootView.findViewById(R.id.commonisearchname);
             city = (EditText) rootView.findViewById(R.id.commonisearchcity);
+            backButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), MainScreen.class);
+                    startActivity(intent);
+                }
+            });
             searchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new LongOperation().execute("yes");
-                }
-            });
-
-            joinButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //new LongOperation().execute("yes");
                 }
             });
             mRecyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
@@ -207,15 +211,15 @@ public class JoinCommunity extends FragmentActivity {
 
 
                 // specify an adapter (see also next example)
-                String[] myDataset = result.split("\n");
-                mAdapter = new MyAdapter(myDataset);
-                mRecyclerView.setAdapter(mAdapter);
-                /*SharedPreferences.Editor editor = pref.edit();
-                if(result.equals("Community created")) {
-                    editor.putBoolean("ownCommunity", true);
-                    editor.putString("oCommunity",name.getText().toString());
-                    editor.commit();
-                }*/
+                if(result.contains("@")){
+                    String[] myDataset = result.split("@");
+                    mAdapter = new MyAdapter(myDataset, "join", pref, getActivity());
+                    mRecyclerView.setAdapter(mAdapter);
+
+                } else {
+                    Toast toast = Toast.makeText(getActivity().getApplicationContext(), "Sorry such a community is not found", Toast.LENGTH_LONG);
+                    toast.show();
+                }
 
             }
         }
