@@ -1,5 +1,9 @@
 package in.jelou.candlelight.candlelight;
 
+/**
+ * Created by hacker on 19/9/15.
+ */
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -10,6 +14,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +26,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -37,12 +42,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by hacker on 27/7/15.
- */
-public class CreateCommunity extends FragmentActivity {
-
-
+public class FollowCommunity extends FragmentActivity {
     DemoCollectionPagerAdapter mDemoCollectionPagerAdapter;
     ViewPager mViewPager;
 
@@ -78,18 +78,21 @@ public class CreateCommunity extends FragmentActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "New Community";
+            return "Follow Community";
         }
     }
 
+
     public static class DemoObjectFragment extends Fragment implements AdapterView.OnItemSelectedListener {
         public static final String ARG_OBJECT = "object";
-        public static int privacycomm = 0;
         public static String countrycomm = "";
         public static String statecomm = "";
         public static EditText name;
         public static EditText city;
         public static String username = "";
+        private RecyclerView mRecyclerView;
+        private RecyclerView.Adapter mAdapter;
+        private RecyclerView.LayoutManager mLayoutManager;
         @Override
         public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -98,44 +101,40 @@ public class CreateCommunity extends FragmentActivity {
                     .getSharedPreferences("jy.jelou.candlelight.candlelight",
                             MODE_PRIVATE);
             username = pref.getString("username","jjjjjj");
-            Log.d("poi",username);
+            Log.d("poi", username);
             LinearLayout rootView = (LinearLayout) inflater.inflate(
-                    R.layout.commuintycreate, container, false);
-            Spinner spinner = (Spinner) rootView.findViewById(R.id.privacycomm);
-            Spinner countryspin = (Spinner) rootView.findViewById(R.id.country);
-            Spinner statespin = (Spinner) rootView.findViewById(R.id.state);
+                    R.layout.searchcommunity, container, false);
+            Spinner countryspin = (Spinner) rootView.findViewById(R.id.searchcountry);
+            Spinner statespin = (Spinner) rootView.findViewById(R.id.searchstate);
             final ArrayAdapter<String> arrayCountryAdapter = new ArrayAdapter<String>(
                     getActivity(), android.R.layout.simple_spinner_item, Countrylists.countrylist);
             arrayCountryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             countryspin.setAdapter(arrayCountryAdapter);
             countryspin.setOnItemSelectedListener(this);
             statespin.setOnItemSelectedListener(this);
-            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                    getActivity(), android.R.layout.simple_spinner_item);
-            arrayAdapter.add("Public");
-            arrayAdapter.add("Private");
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(arrayAdapter);
-            spinner.setOnItemSelectedListener(this);
-            CardView backButton = (CardView)rootView.findViewById(R.id.backfromcommunitycreate);
-            CardView createButton = (CardView) rootView.findViewById(R.id.communitycreate);
-            name = (EditText) rootView.findViewById(R.id.commoninewname);
-            city = (EditText) rootView.findViewById(R.id.commoninewcity);
+            CardView searchButton = (CardView)rootView.findViewById(R.id.communitysearch);
+            CardView backButton = (CardView) rootView.findViewById(R.id.backfromcommunitysearch);
+            name = (EditText) rootView.findViewById(R.id.commonisearchname);
+            city = (EditText) rootView.findViewById(R.id.commonisearchcity);
             backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(),
-                            MainScreen.class);
+                    Intent intent = new Intent(v.getContext(), MainScreen.class);
                     startActivity(intent);
                 }
             });
-
-            createButton.setOnClickListener(new View.OnClickListener() {
+            searchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new LongOperation().execute("yes");
                 }
             });
+            mRecyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+            mRecyclerView.setHasFixedSize(true);
+
+            // use a linear layout manager
+            mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+            mRecyclerView.setLayoutManager(mLayoutManager);
 
             return rootView;
         }
@@ -143,11 +142,9 @@ public class CreateCommunity extends FragmentActivity {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             Spinner spinner = (Spinner) parent;
-            if (spinner.getId() == R.id.privacycomm){
-
-            } else if(spinner.getId() == R.id.country) {
+            if(spinner.getId() == R.id.searchcountry) {
                 countrycomm = (String) parent.getItemAtPosition(position);
-                Spinner statespin = (Spinner) parent.getRootView().findViewById(R.id.state);
+                Spinner statespin = (Spinner) parent.getRootView().findViewById(R.id.searchstate);
                 final ArrayAdapter<String> arrayStateAdapter = new ArrayAdapter<String>(
                         getActivity(), android.R.layout.simple_spinner_item, Countrylists.buildStates(position));
                 arrayStateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -164,17 +161,16 @@ public class CreateCommunity extends FragmentActivity {
             try {
                 // create a list to store HTTP variables and their values
                 HttpClient httpclient = new DefaultHttpClient();
-                HttpPost httppost = new HttpPost("http://192.168.150.1:8080/registercommunity");
+                HttpPost httppost = new HttpPost("http://192.168.150.1:8080/searchcommunity");
 
                 // Add your data
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 
-                nameValuePairs.add(new BasicNameValuePair("a", Integer.toString(privacycomm)));
+
                 nameValuePairs.add(new BasicNameValuePair("a", countrycomm));
                 nameValuePairs.add(new BasicNameValuePair("b", statecomm));
                 nameValuePairs.add(new BasicNameValuePair("b", name.getText().toString()));
                 nameValuePairs.add(new BasicNameValuePair("b", city.getText().toString()));
-                nameValuePairs.add(new BasicNameValuePair("b", username));
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                 // Execute HTTP Post Request
@@ -197,7 +193,6 @@ public class CreateCommunity extends FragmentActivity {
 
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
-            privacycomm = 0;
         }
 
         private class LongOperation extends AsyncTask<String, Void, String> {
@@ -211,28 +206,21 @@ public class CreateCommunity extends FragmentActivity {
             @Override
             protected void onPostExecute(String result) {
                 Log.i("sdfsf", result);
-                Toast toast = null;
                 final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
                         MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                String[] resultP = result.split("$");
-                if(resultP[0].equals("Community created")) {
-                    editor.putBoolean("ownCommunity", true);
-                    editor.putString("oCommunityname", name.getText().toString());
-                    editor.putString("oCommunityid", resultP[1]);
-                    editor.putString("oCommunitycountry", countrycomm);
-                    editor.putString("oCommunitystate", statecomm);
-                    editor.putString("oCommunitycity", city.getText().toString());
-                    editor.putString("oCommunityprivacy", Integer.toString(privacycomm));
-                    editor.commit();
-                    toast = Toast.makeText(getActivity(), "Successfully created " + name.getText().toString(), Toast.LENGTH_LONG);
+
+
+                // specify an adapter (see also next example)
+                if(result.contains("@")){
+                    String[] myDataset = result.split("@");
+                    mAdapter = new MyAdapter(myDataset, "follow", pref, getActivity());
+                    mRecyclerView.setAdapter(mAdapter);
+
                 } else {
-                    toast = Toast.makeText(getActivity(), resultP[0], Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(getActivity().getApplicationContext(), "Sorry such a community is not found", Toast.LENGTH_LONG);
+                    toast.show();
                 }
-                toast.show();
-                Intent intent = new Intent(getActivity().getBaseContext(),
-                        MainScreen.class);
-                startActivity(intent);
+
             }
         }
     }

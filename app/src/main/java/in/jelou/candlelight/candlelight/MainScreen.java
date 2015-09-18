@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -180,12 +179,26 @@ public class MainScreen extends FragmentActivity {
                             startActivity(myIntent);
                         }
                     });
+                    TextView followcom = new TextView(rootView.getContext());
+                    followcom.setText("Follow");
+                    SubActionButton followcombut = itemBuilder.setContentView(followcom)
+                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    followcombut.setOnClickListener(new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            Intent myIntent = new Intent(v.getContext(),
+                                    FollowCommunity.class);
+                            startActivity(myIntent);
+                        }
+                    });
                     FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(getActivity())
                             .setRadius(80)
                             .setStartAngle(180)
                             .setEndAngle(90)
                             .addSubActionView(newcombut)
                             .addSubActionView(joincombut)
+                            .addSubActionView(followcombut)
                             .attachTo(fab)
                             .build();
                 } else if(pref.getBoolean("ownCommunity",false) && (!pref.getBoolean("joinCommunity1",false) || !pref.getBoolean("joinCommunity2",false))){
@@ -196,29 +209,95 @@ public class MainScreen extends FragmentActivity {
                     joincom.setText("Join");
                     SubActionButton joincombut = itemBuilder.setContentView(joincom)
                             .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    joincombut.setOnClickListener(new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            Intent myIntent = new Intent(v.getContext(),
+                                    JoinCommunity.class);
+                            startActivity(myIntent);
+                        }
+                    });
+                    TextView followcom = new TextView(rootView.getContext());
+                    followcom.setText("Follow");
+                    SubActionButton followcombut = itemBuilder.setContentView(followcom)
+                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    followcombut.setOnClickListener(new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            Intent myIntent = new Intent(v.getContext(),
+                                    FollowCommunity.class);
+                            startActivity(myIntent);
+                        }
+                    });
                     FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(getActivity())
                             .setRadius(80)
                             .setStartAngle(180)
                             .addSubActionView(joincombut)
+                            .addSubActionView(followcombut)
                             .attachTo(fab)
                             .build();
                 } else if(!pref.getBoolean("ownCommunity",false) && pref.getBoolean("joinCommunity1",false) && pref.getBoolean("joinCommunity2",false)){
                     commintyShow.setText("It seems you can create a community. Create one");
                     show_comminuty_list(container, rootView);
                     SubActionButton.Builder itemBuilder = new SubActionButton.Builder(getActivity());
-                    TextView joincom = new TextView(rootView.getContext());
-                    joincom.setText("New");
-                    SubActionButton joincombut = itemBuilder.setContentView(joincom)
+                    TextView newcom = new TextView(rootView.getContext());
+                    newcom.setText("New");
+                    SubActionButton newcombut = itemBuilder.setContentView(newcom)
                             .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    newcombut.setOnClickListener(new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            Intent myIntent = new Intent(v.getContext(),
+                                    CreateCommunity.class);
+                            startActivity(myIntent);
+                        }
+                    });
+                    TextView followcom = new TextView(rootView.getContext());
+                    followcom.setText("Follow");
+                    SubActionButton followcombut = itemBuilder.setContentView(followcom)
+                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    followcombut.setOnClickListener(new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            Intent myIntent = new Intent(v.getContext(),
+                                    FollowCommunity.class);
+                            startActivity(myIntent);
+                        }
+                    });
                     FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(getActivity())
                             .setRadius(80)
                             .setStartAngle(180)
-                            .addSubActionView(joincombut)
+                            .addSubActionView(newcombut)
+                            .addSubActionView(followcombut)
                             .attachTo(fab)
                             .build();
                 } else if(pref.getBoolean("ownCommunity",false) && pref.getBoolean("joinCommunity1",false) && pref.getBoolean("joinCommunity2",false)){
                     commintyShow.setText("You can view your communities");
                     show_comminuty_list(container, rootView);
+                    SubActionButton.Builder itemBuilder = new SubActionButton.Builder(getActivity());
+                    TextView followcom = new TextView(rootView.getContext());
+                    followcom.setText("Follow");
+                    SubActionButton followcombut = itemBuilder.setContentView(followcom)
+                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                    followcombut.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+                            Intent myIntent = new Intent(v.getContext(),
+                                    FollowCommunity.class);
+                            startActivity(myIntent);
+                        }
+                    });
+                    FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(getActivity())
+                            .setRadius(80)
+                            .setStartAngle(180)
+                            .addSubActionView(followcombut)
+                            .attachTo(fab)
+                            .build();
                 }
 
                 return rootView;
@@ -278,6 +357,9 @@ public class MainScreen extends FragmentActivity {
                     signup.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            errorsign = (TextView) rootView.findViewById(R.id.errorsign);
+                            username = (EditText) rootView.findViewById(R.id.username);
+                            password = (EditText) rootView.findViewById(R.id.password);
                             new LongOperation1().execute("yes");
                         }
                     });
@@ -306,6 +388,7 @@ public class MainScreen extends FragmentActivity {
                                     }
                                 });
                             } else {
+                                errorsign = (TextView) rootView.findViewById(R.id.errorsign);
                                 username = (EditText) rootView.findViewById(R.id.email);
                                 username.setVisibility(View.INVISIBLE);
                                 username = (EditText) rootView.findViewById(R.id.username);
@@ -319,7 +402,20 @@ public class MainScreen extends FragmentActivity {
                                 signup.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        new LongOperation1().execute("yes");
+                                        if (pref.getString("username", null).equals(null)) {
+                                            if (pref.getString("username", null).equals(username.getText().toString()) && pref.getString("password", null).equals(password.getText().toString())) {
+                                                pref.edit().putBoolean("islogedin", true);
+                                                pref.edit().commit();
+                                                Intent intent = new Intent(getActivity().getBaseContext(),
+                                                        MainScreen.class);
+                                                startActivity(intent);
+                                            } else {
+                                                new LongOperation1().execute("yes");
+                                            }
+                                        } else {
+                                            new LongOperation1().execute("yes");
+                                        }
+
                                     }
                                 });
                             }
@@ -406,7 +502,17 @@ public class MainScreen extends FragmentActivity {
                             .getSharedPreferences("jy.jelou.candlelight.candlelight",
                                     MODE_PRIVATE);
                     if(pref.getBoolean("ownCommunity", false)){
-                        arrayAdapter.add(pref.getString("oCommunity",null));
+                        arrayAdapter.add(pref.getString("oCommunityname",null));
+                    }
+                    if(pref.getBoolean("joinCommunity1", false)){
+                        arrayAdapter.add(pref.getString("Community1name",null));
+                    }
+                    if(pref.getBoolean("joinCommunity2", false)){
+                        arrayAdapter.add(pref.getString("Community2name",null));
+                    }
+                    int count = pref.getInt("followCommunityCount",0);
+                    for(int i = 0; i <= count; i++) {
+                        arrayAdapter.add(pref.getString("fCname"+Integer.toString(i),null));
                     }
                     builderSingle.setNegativeButton("cancel",
                             new DialogInterface.OnClickListener() {

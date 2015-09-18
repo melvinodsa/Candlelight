@@ -58,7 +58,7 @@
         app:layout_anchor="@id/commoni"
         app:layout_anchorGravity="bottom|right">
         <android.support.v7.widget.CardView
-            android:visibility="invisible"
+            android:visibility="visible"
             android:id="@+id/view_community"
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:card_view="http://schemas.android.com/apk/res-auto"
