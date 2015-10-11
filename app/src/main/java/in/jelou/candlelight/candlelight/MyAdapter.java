@@ -90,7 +90,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                 SharedPreferences.Editor editor  =prefs.edit();
                 if(joinOrFollow.equals("join")){
                     if(!prefs.getBoolean("joinCommunity1",false) && !prefs.getBoolean("joinCommunity2",false)) {
-                        new LongOperation().execute(communityDetails[0], prefs.getString("username", null));
+                        if(!prefs.getString("oCommunityid", null).equals(communityDetails[0])) {
+                            new LongOperation().execute(communityDetails[0], prefs.getString("username", null));
+                        } else {
+                            Toast toast = Toast.makeText(context.getApplicationContext(), "Sorry you created this community.", Toast.LENGTH_LONG);
+                            toast.show();
+                        }
                     } else if(prefs.getBoolean("joinCommunity1",false) && !prefs.getBoolean("joinCommunity2",false)) {
                         if(!prefs.getString("Community1id", null).equals(communityDetails[0])) {
                             new LongOperation().execute(communityDetails[0], prefs.getString("username", null));
@@ -101,7 +106,40 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     }
 
                 } else {
-                    new LongOperation1().execute(communityDetails[0], prefs.getString("username", null));
+                    int count = prefs.getInt("followCommunityCount",0);
+                    Boolean flag = false;
+                    for (int i = 0; i < count; i++) {
+                        if(prefs.getString("fCid"+Integer.toString(count), null).equals(communityDetails[0])) {
+                            flag = true;
+                        }
+                    }
+                    if(!flag) {
+                        if(!prefs.getBoolean("joinCommunity1",false) && !prefs.getBoolean("joinCommunity2",false)) {
+                            if(!prefs.getString("oCommunityid", null).equals(communityDetails[0])) {
+                                new LongOperation1().execute(communityDetails[0], prefs.getString("username", null));
+                            } else {
+                                Toast toast = Toast.makeText(context.getApplicationContext(), "Sorry you created this community.", Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        } else if(prefs.getBoolean("joinCommunity1",false) && !prefs.getBoolean("joinCommunity2",false)) {
+                            if(!prefs.getString("Community1id", null).equals(communityDetails[0])) {
+                                new LongOperation1().execute(communityDetails[0], prefs.getString("username", null));
+                            } else {
+                                Toast toast = Toast.makeText(context.getApplicationContext(), "Sorry you have already joined this community.", Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        } else if(prefs.getBoolean("joinCommunity1",false) && prefs.getBoolean("joinCommunity2",false)) {
+                            if (!prefs.getString("Community1id", null).equals(communityDetails[0]) || !prefs.getString("Community2id", null).equals(communityDetails[0])) {
+                                new LongOperation1().execute(communityDetails[0], prefs.getString("username", null));
+                            } else {
+                                Toast toast = Toast.makeText(context.getApplicationContext(), "Sorry you have already joined this community.", Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        }
+                    } else {
+                        Toast toast = Toast.makeText(context.getApplicationContext(), "Sorry you have already followed this community.", Toast.LENGTH_LONG);
+                        toast.show();
+                    }
                 }
             }
         });
@@ -243,12 +281,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                         context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = pref.edit();
                 int count = pref.getInt("followCommunityCount",0);
+                count++;
                 editor.putString("fCname"+Integer.toString(count), communityDetails[1]);
                 editor.putString("fCid"+Integer.toString(count), communityDetails[0]);
                 editor.putString("fCcountry"+Integer.toString(count), communityDetails[2]);
                 editor.putString("fCstate"+Integer.toString(count), communityDetails[3]);
                 editor.putString("fCstate" + Integer.toString(count), communityDetails[4]);
-                count++;
                 editor.putInt("followCommunityCount", count);
                 editor.commit();
 

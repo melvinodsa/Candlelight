@@ -94,11 +94,11 @@ public class MainScreen extends FragmentActivity {
         @Override
         public CharSequence getPageTitle(int position) {
             if (position == 0) {
-                return "Home";
-            } else if (position == 1) {
-                return "Personal";
-            } else {
                 return "Community";
+            } else if (position == 1) {
+                return "Home";
+            } else {
+                return "Personal";
             }
         }
     }
@@ -182,7 +182,7 @@ public class MainScreen extends FragmentActivity {
                     TextView followcom = new TextView(rootView.getContext());
                     followcom.setText("Follow");
                     SubActionButton followcombut = itemBuilder.setContentView(followcom)
-                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                            .setLayoutParams(new FrameLayout.LayoutParams(90, 90, 1)).build();
                     followcombut.setOnClickListener(new View.OnClickListener(){
 
                         @Override
@@ -221,7 +221,7 @@ public class MainScreen extends FragmentActivity {
                     TextView followcom = new TextView(rootView.getContext());
                     followcom.setText("Follow");
                     SubActionButton followcombut = itemBuilder.setContentView(followcom)
-                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                            .setLayoutParams(new FrameLayout.LayoutParams(90, 90, 1)).build();
                     followcombut.setOnClickListener(new View.OnClickListener(){
 
                         @Override
@@ -258,7 +258,7 @@ public class MainScreen extends FragmentActivity {
                     TextView followcom = new TextView(rootView.getContext());
                     followcom.setText("Follow");
                     SubActionButton followcombut = itemBuilder.setContentView(followcom)
-                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                            .setLayoutParams(new FrameLayout.LayoutParams(90, 90, 1)).build();
                     followcombut.setOnClickListener(new View.OnClickListener(){
 
                         @Override
@@ -282,7 +282,7 @@ public class MainScreen extends FragmentActivity {
                     TextView followcom = new TextView(rootView.getContext());
                     followcom.setText("Follow");
                     SubActionButton followcombut = itemBuilder.setContentView(followcom)
-                            .setLayoutParams(new FrameLayout.LayoutParams(70, 70, 1)).build();
+                            .setLayoutParams(new FrameLayout.LayoutParams(90, 90, 1)).build();
                     followcombut.setOnClickListener(new View.OnClickListener() {
 
                         @Override
@@ -501,19 +501,22 @@ public class MainScreen extends FragmentActivity {
                     final SharedPreferences pref = container.getContext()
                             .getSharedPreferences("jy.jelou.candlelight.candlelight",
                                     MODE_PRIVATE);
-                    if(pref.getBoolean("ownCommunity", false)){
-                        arrayAdapter.add(pref.getString("oCommunityname",null));
+                    if (pref.getBoolean("ownCommunity", false)) {
+                        arrayAdapter.add(pref.getString("oCommunityname", null));
+
                     }
-                    if(pref.getBoolean("joinCommunity1", false)){
-                        arrayAdapter.add(pref.getString("Community1name",null));
+                    if (pref.getBoolean("joinCommunity1", false)) {
+                        arrayAdapter.add(pref.getString("Community1name", null));
                     }
-                    if(pref.getBoolean("joinCommunity2", false)){
-                        arrayAdapter.add(pref.getString("Community2name",null));
+                    if (pref.getBoolean("joinCommunity2", false)) {
+                        arrayAdapter.add(pref.getString("Community2name", null));
                     }
-                    int count = pref.getInt("followCommunityCount",0);
-                    for(int i = 0; i <= count; i++) {
-                        arrayAdapter.add(pref.getString("fCname"+Integer.toString(i),null));
+                    int count = pref.getInt("followCommunityCount", 0);
+                    Log.d("pqpq", Integer.toString(count));
+                    for (int i = 0; i < count; i++) {
+                        arrayAdapter.add(pref.getString("fCname" + Integer.toString(i), null));
                     }
+
                     builderSingle.setNegativeButton("cancel",
                             new DialogInterface.OnClickListener() {
 
@@ -527,11 +530,11 @@ public class MainScreen extends FragmentActivity {
                             new DialogInterface.OnClickListener() {
 
                                 @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                        /*String strName = arrayAdapter.getItem(which);
+                                public void onClick(DialogInterface dialog, int which) {/*
+                                        String strName = arrayAdapter.getItem(which);
                                         AlertDialog.Builder builderInner = new AlertDialog.Builder(
                                                 container.getContext());
-                                        builderInner.setMessage(strName);
+                                        builderInner.setMessage("Hello");
                                         builderInner.setTitle("Your Selected Item is");
                                         builderInner.setPositiveButton("Ok",
                                                 new DialogInterface.OnClickListener() {

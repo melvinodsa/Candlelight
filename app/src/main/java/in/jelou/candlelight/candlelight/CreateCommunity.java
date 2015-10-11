@@ -215,7 +215,7 @@ public class CreateCommunity extends FragmentActivity {
                 final SharedPreferences pref = getActivity().getSharedPreferences("jy.jelou.candlelight.candlelight",
                         MODE_PRIVATE);
                 SharedPreferences.Editor editor = pref.edit();
-                String[] resultP = result.split("$");
+                String[] resultP = result.split("  ");
                 if(resultP[0].equals("Community created")) {
                     editor.putBoolean("ownCommunity", true);
                     editor.putString("oCommunityname", name.getText().toString());
